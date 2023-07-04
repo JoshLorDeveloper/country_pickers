@@ -26,17 +26,13 @@ class DemoPage extends StatefulWidget {
 }
 
 class _HomePageState extends State<DemoPage> {
-  Country _selectedDialogCountry =
-      CurrencyPickerUtils.getCountryByCurrencyCode('USD');
+  Country _selectedDialogCountry = CurrencyPickerUtils.getCountryByCurrencyCode('USD');
 
-  Country _selectedFilteredDialogCountry =
-      CurrencyPickerUtils.getCountryByCurrencyCode('USD');
+  Country _selectedFilteredDialogCountry = CurrencyPickerUtils.getCountryByCurrencyCode('USD');
 
-  Country _selectedCupertinoCountry =
-      CurrencyPickerUtils.getCountryByIsoCode('tr');
+  Country _selectedCupertinoCountry = CurrencyPickerUtils.getCountryByIsoCode('tr');
 
-  Country _selectedFilteredCupertinoCountry =
-      CurrencyPickerUtils.getCountryByIsoCode('DE');
+  Country _selectedFilteredCupertinoCountry = CurrencyPickerUtils.getCountryByIsoCode('DE');
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +103,7 @@ class _HomePageState extends State<DemoPage> {
               children: <Widget>[
                 Text('CurrencyPickerCupertino (filtered)'),
                 ListTile(
-                  title: _buildCupertinoSelectedItem(
-                      _selectedFilteredCupertinoCountry),
+                  title: _buildCupertinoSelectedItem(_selectedFilteredCupertinoCountry),
                   onTap: _openFilteredCupertinoCurrencyPicker,
                 ),
               ],
@@ -124,11 +119,9 @@ class _HomePageState extends State<DemoPage> {
           CurrencyPickerDropdown(
             initialValue: 'AR',
             itemBuilder: _buildDropdownItem,
-            itemFilter: filtered
-                ? (c) => ['AR', 'DE', 'GB', 'CN'].contains(c.isoCode)
-                : null,
+            itemFilter: (c) => filtered ? (['AR', 'DE', 'GB', 'CN'].contains(c.isoCode)) : false,
             onValuePicked: (Country country) {
-              print("${country.name}");
+              print("--- ${country.name}");
             },
           ),
           SizedBox(
@@ -160,7 +153,7 @@ class _HomePageState extends State<DemoPage> {
           SizedBox(width: 8.0),
           Text("+${country.currencyCode}"),
           SizedBox(width: 8.0),
-          Flexible(child: Text(country.name))
+          Flexible(child: Text(country.name ?? ""))
         ],
       );
 
@@ -174,8 +167,7 @@ class _HomePageState extends State<DemoPage> {
                 searchInputDecoration: InputDecoration(hintText: 'Search...'),
                 isSearchable: true,
                 title: Text('Select your phone code'),
-                onValuePicked: (Country country) =>
-                    setState(() => _selectedDialogCountry = country),
+                onValuePicked: (Country country) => setState(() => _selectedDialogCountry = country),
                 itemBuilder: _buildDialogItem)),
       );
 
@@ -189,8 +181,7 @@ class _HomePageState extends State<DemoPage> {
                 searchInputDecoration: InputDecoration(hintText: 'Search...'),
                 isSearchable: true,
                 title: Text('Select your phone code'),
-                onValuePicked: (Country country) =>
-                    setState(() => _selectedFilteredDialogCountry = country),
+                onValuePicked: (Country country) => setState(() => _selectedFilteredDialogCountry = country),
                 itemFilter: (c) => ['AR', 'DE', 'GB', 'CN'].contains(c.isoCode),
                 itemBuilder: _buildDialogItem)),
       );
@@ -204,8 +195,7 @@ class _HomePageState extends State<DemoPage> {
           pickerSheetHeight: 300.0,
           pickerItemHeight: 75,
           initialCountry: _selectedCupertinoCountry,
-          onValuePicked: (Country country) =>
-              setState(() => _selectedCupertinoCountry = country),
+          onValuePicked: (Country country) => setState(() => _selectedCupertinoCountry = country),
         );
       });
 
@@ -216,8 +206,7 @@ class _HomePageState extends State<DemoPage> {
           backgroundColor: Colors.white,
           pickerSheetHeight: 200.0,
           initialCountry: _selectedFilteredCupertinoCountry,
-          onValuePicked: (Country country) =>
-              setState(() => _selectedFilteredCupertinoCountry = country),
+          onValuePicked: (Country country) => setState(() => _selectedFilteredCupertinoCountry = country),
           itemFilter: (c) => ['AR', 'DE', 'GB', 'CN'].contains(c.isoCode),
         );
       });
@@ -229,18 +218,17 @@ class _HomePageState extends State<DemoPage> {
         SizedBox(width: 8.0),
         Text("+${country.currencyCode}"),
         SizedBox(width: 8.0),
-        Flexible(child: Text(country.name))
+        Flexible(child: Text(country.name ?? ""))
       ],
     );
   }
 
   Widget _buildCupertinoItem(Country country) {
     return DefaultTextStyle(
-      style:
-          const TextStyle(
-            color: CupertinoColors.white,
-            fontSize: 16.0,
-          ),
+      style: const TextStyle(
+        color: CupertinoColors.white,
+        fontSize: 16.0,
+      ),
       child: Row(
         children: <Widget>[
           SizedBox(width: 8.0),
@@ -248,7 +236,7 @@ class _HomePageState extends State<DemoPage> {
           SizedBox(width: 8.0),
           Text("+${country.currencyCode}"),
           SizedBox(width: 8.0),
-          Flexible(child: Text(country.name))
+          Flexible(child: Text(country.name ?? ""))
         ],
       ),
     );

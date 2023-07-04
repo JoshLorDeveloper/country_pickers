@@ -5,9 +5,12 @@ import 'package:flutter/widgets.dart';
 class CurrencyPickerUtils {
   static Country getCountryByIsoCode(String isoCode) {
     try {
-      return countryList.firstWhere(
-        (country) => country.isoCode.toLowerCase() == isoCode.toLowerCase(),
+      final result = countryList.firstWhere(
+        (country) {
+          return ((country.isoCode ?? "").toLowerCase() == isoCode.toLowerCase());
+        },
       );
+      return result;
     } catch (error) {
       throw Exception("The initialValue provided is not a supported iso code!");
     }
@@ -19,7 +22,7 @@ class CurrencyPickerUtils {
 
   static Widget getDefaultFlagImage(Country country) {
     return Image.asset(
-      CurrencyPickerUtils.getFlagImageAssetPath(country.isoCode),
+      CurrencyPickerUtils.getFlagImageAssetPath(country.isoCode ?? ""),
       height: 20.0,
       width: 30.0,
       fit: BoxFit.fill,
@@ -30,11 +33,10 @@ class CurrencyPickerUtils {
   static Country getCountryByCurrencyCode(String currencyCode) {
     try {
       return countryList.firstWhere(
-        (country) => country.currencyCode.toLowerCase() == currencyCode.toLowerCase(),
+        (country) => country.currencyCode?.toLowerCase() == currencyCode.toLowerCase(),
       );
     } catch (error) {
-      throw Exception(
-          "The initialValue provided is not a supported country code!");
+      throw Exception("The initialValue provided is not a supported country code!");
     }
   }
 }

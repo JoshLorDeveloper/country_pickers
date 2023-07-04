@@ -3,7 +3,6 @@ import 'package:currency_pickers/utils/typedefs.dart';
 
 import 'package:currency_pickers/utils/my_alert_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'countries.dart';
 
 ///Provides a customizable [Dialog] which displays all countries
@@ -11,13 +10,13 @@ import 'countries.dart';
 
 class CurrencyPickerDialog extends StatefulWidget {
   /// Callback that is called with selected Country
-  final ValueChanged<Country> onValuePicked;
+  final ValueChanged<Country>? onValuePicked;
 
   /// The (optional) title of the dialog is displayed in a large font at the top
   /// of the dialog.
   ///
   /// Typically a [Text] widget.
-  final Widget title;
+  final Widget? title;
 
   /// Padding around the title.
   ///
@@ -29,11 +28,11 @@ class CurrencyPickerDialog extends StatefulWidget {
   /// provided (but see [contentPadding]). If it _is_ null, then an extra 20
   /// pixels of bottom padding is added to separate the [title] from the
   /// [actions].
-  final EdgeInsetsGeometry titlePadding;
+  final EdgeInsetsGeometry? titlePadding;
 
   /// Padding around the content.
 
-  final EdgeInsetsGeometry contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
 
   /// The semantic label of the dialog used by accessibility frameworks to
   /// announce screen transitions when the dialog is opened and closed.
@@ -46,43 +45,43 @@ class CurrencyPickerDialog extends StatefulWidget {
   ///
   ///  * [SemanticsConfiguration.isRouteName], for a description of how this
   ///    value is used.
-  final String semanticLabel;
+  final String? semanticLabel;
 
   /// Filters the available country list
-  final ItemFilter itemFilter;
+  final ItemFilter? itemFilter;
 
   /// Function used to sort list
-  final int Function(Country a, Country b) itemSorter;
+  final int Function(Country a, Country b)? itemSorter;
 
   ///Callback that is called with selected item of type Country which returns a
   ///Widget to build list view item inside dialog
-  final ItemBuilder itemBuilder;
+  final ItemBuilder? itemBuilder;
 
   /// The (optional) horizontal separator used between title, content and
   /// actions.
   ///
   /// If this divider is not provided a [Divider] is used with [height]
   /// property is set to 0.0
-  final Widget divider;
+  final Widget? divider;
 
   /// The [divider] is not displayed if set to false. Default is set to false.
-  final bool isDividerEnabled;
+  final bool? isDividerEnabled;
 
   /// Determines if search [TextField] is shown or not
   /// Defaults to false
-  final bool isSearchable;
+  final bool? isSearchable;
 
   /// The optional [decoration] of search [TextField]
-  final InputDecoration searchInputDecoration;
+  final InputDecoration? searchInputDecoration;
 
   ///The optional [cursorColor] of search [TextField]
-  final Color searchCursorColor;
+  final Color? searchCursorColor;
 
   ///The search empty view is displayed if nothing returns from search result
-  final Widget searchEmptyView;
+  final Widget? searchEmptyView;
 
   CurrencyPickerDialog({
-    Key key,
+    Key? key,
     this.onValuePicked,
     this.title,
     this.titlePadding,
@@ -108,19 +107,15 @@ class CurrencyPickerDialog extends StatefulWidget {
 }
 
 class SingleChoiceDialogState extends State<CurrencyPickerDialog> {
-  List<Country> _allCountries;
+  late List<Country> _allCountries;
 
-  List<Country> _filteredCountries;
+  late List<Country> _filteredCountries;
 
   @override
   void initState() {
-    _allCountries = countryList
-        .where(widget.itemFilter ?? acceptAllCountries)
-        .toList();
-
-    if(widget.itemSorter != null){
-      _allCountries.sort(widget.itemSorter);
-    }
+    //_allCountries = countryList.where(widget.itemFilter ?? acceptAllCountries).toList();
+    _allCountries = countryList;
+    //_allCountries.sort(widget.itemSorter);
 
     _filteredCountries = _allCountries;
 
@@ -131,11 +126,11 @@ class SingleChoiceDialogState extends State<CurrencyPickerDialog> {
   Widget build(BuildContext context) {
     return MyAlertDialog(
       title: _buildHeader(),
-      contentPadding: widget.contentPadding,
+      contentPadding: widget.contentPadding ?? EdgeInsets.all(8),
       semanticLabel: widget.semanticLabel,
       content: _buildContent(context),
-      isDividerEnabled: widget.isDividerEnabled,
-      divider: widget.divider,
+      isDividerEnabled: widget.isDividerEnabled ?? true,
+      divider: widget.divider ?? Divider(),
     );
   }
 
@@ -145,11 +140,12 @@ class SingleChoiceDialogState extends State<CurrencyPickerDialog> {
             shrinkWrap: true,
             children: _filteredCountries
                 .map((item) => SimpleDialogOption(
-                      child: widget.itemBuilder != null
-                          ? widget.itemBuilder(item)
-                          : Text(item.name),
+                      child: widget.itemBuilder != null ? widget.itemBuilder!(item) : Text(item.name ?? ""),
                       onPressed: () {
-                        widget.onValuePicked(item);
+                        if (widget.onValuePicked != null) {
+                          widget.onValuePicked!(item);
+                        }
+
                         Navigator.pop(context);
                       },
                     ))
@@ -162,7 +158,7 @@ class SingleChoiceDialogState extends State<CurrencyPickerDialog> {
   }
 
   _buildHeader() {
-    return widget.isSearchable
+    return widget.isSearchable != null
         ? Column(
             children: <Widget>[
               _buildTitle(),
@@ -175,7 +171,7 @@ class SingleChoiceDialogState extends State<CurrencyPickerDialog> {
   _buildTitle() {
     return widget.titlePadding != null
         ? Padding(
-            padding: widget.titlePadding,
+            padding: widget.titlePadding ?? EdgeInsets.all(8),
             child: widget.title,
           )
         : widget.title;
@@ -184,16 +180,15 @@ class SingleChoiceDialogState extends State<CurrencyPickerDialog> {
   _buildSearchField() {
     return TextField(
       cursorColor: widget.searchCursorColor,
-      decoration:
-          widget.searchInputDecoration ?? InputDecoration(hintText: 'Search'),
+      decoration: widget.searchInputDecoration ?? InputDecoration(hintText: 'Search'),
       onChanged: (String value) {
         setState(() {
           _filteredCountries = _allCountries
               .where((Country country) =>
-                  country.name.toLowerCase().startsWith(value.toLowerCase()) ||
-                  country.currencyCode.toLowerCase().startsWith(value.toLowerCase()) ||
-                  country.currencyName.toLowerCase().contains(value.toLowerCase()) ||
-                  country.isoCode.toLowerCase().startsWith(value.toLowerCase()))
+                  (country.name ?? "").toLowerCase().startsWith(value.toLowerCase()) ||
+                  (country.currencyCode ?? "").toLowerCase().startsWith(value.toLowerCase()) ||
+                  (country.currencyName ?? "").toLowerCase().contains(value.toLowerCase()) ||
+                  (country.isoCode ?? "").toLowerCase().startsWith(value.toLowerCase()))
               .toList();
         });
       },
